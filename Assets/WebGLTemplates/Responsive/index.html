@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>%UNITY_WEB_NAME%</title>
+
+    <!-- COPIA Y PEGA AQU� EL CODIGO BRINDADO POR FIREBASE -->
+
+    <!-- Insert these scripts at the bottom of the HTML, but before you use any Firebase services -->
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-app.js"></script>
+
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/6.3.1/firebase-functions.js"></script>
+    <script>
+      // TODO: Replace the following with your app's Firebase project configuration
+      const config = {
+        apiKey: "AIzaSyCkkbd5PCzrIS6NRrSdrEEVXRIfS1Y8tSw",
+        authDomain: "cohesive-poetry-247919.firebaseapp.com",
+        databaseURL: "https://cohesive-poetry-247919.firebaseio.com/",
+        projectId: "cohesive-poetry-247919",
+        storageBucket: "cohesive-poetry-247919.appspot.com",
+        messagingSenderId: "704475718432",
+        appId: "1:704475718432:web:b185a8f22c161801"
+      };
+      // Initialize Firebase with a "default" Firebase project
+      firebase.initializeApp(config);
+      // Required for side-effects
+    </script>
+
+    <!--  -->
+
+    <link rel="shortcut icon" href="TemplateData/favicon.ico" />
+    <link rel="stylesheet" href="TemplateData/style.css" />
+    <script src="TemplateData/UnityProgress.javascript"></script>
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      var unityInstance = UnityLoader.instantiate(
+        "gameContainer",
+        "%UNITY_WEBGL_BUILD_URL%",
+        { onProgress: UnityProgress }
+      );
+    </script>
+  </head>
+  <body>
+    <!--Unity and recaptcha container-->
+    <body onunload="OnClose()"></body>
+    <div class="webgl-content">
+      <div
+        id="gameContainer"
+        style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px"
+      ></div>
+    </div>
+    <div id="phone-sign-in-recaptcha"></div>
+    <!--<div class="simmer">template by: <a href="https://simmer.io" target="_blank">SIMMER.io</a></div>-->
+    <script src="TemplateData/responsive.javascript"></script>
+
+    <!--Data intialization-->
+    <script>
+      console.log("Creating AppVerifier");
+      window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+        "phone-sign-in-recaptcha",
+        {
+          size: "invisible",
+          callback: function(response) {
+            // reCAPTCHA solved, allow signInWithPhoneNumber.
+            setTimeout(function() {
+              document.getElementById(
+                "phone-sign-in-recaptcha"
+              ).style.visibility = "hidden";
+            }, 1000);
+          }
+        }
+      );
+    </script>
+
+    <script>
+      let currentUser = null;
+      firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+          console.log("Usuario already login");
+          currentUser = user;
+        } else {
+        }
+
+        setTimeout(function() {
+          document.getElementById("gameContainer").focus();
+        }, 100);
+      });
+    </script>
+    <!--Web Function declarations-->
+    <script>
+      let functions = firebase.functions();
+      const updateFormFilled = functions.httpsCallable("updateFormFilled");
+      const updateStats = functions.httpsCallable("updateStats");
+
+      const gameStates = "GameStates";
+      const items = "Items";
+      const startGame = "StartGame";
+      const missionAttempts = "MissionAttempts";
+      const endGame = "EndGame";
+
+      function OnClose() {
+        unityInstance.SendMessage("Firebase", "OnApplicationQuit");
+      }
+    </script>
+  </body>
+</html>
